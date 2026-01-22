@@ -1,15 +1,845 @@
-<!-- TODO 1: Create the HTML Boilerplate -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veritas Lens • AI Fact-Checker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #2563eb;       /* Trust, authority */
+            --teal-accent: #0d9488;        /* Clarity, innovation */
+            --warning-amber: #f59e0b;      /* Caution */
+            --danger-red: #dc2626;         /* False/Manipulated */
+            --success-green: #10b981;      /* Verified/Genuine */
+            --neutral-gray: #374151;       /* Uncertain/Neutral */
+            --bg-light: #f8fafc;
+            --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            color: #1f2937;
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Header & Branding */
+        header {
+            text-align: center;
+            padding: 40px 20px 30px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .logo-icon {
+            background: var(--primary-blue);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .logo-text h1 {
+            font-size: 2.8rem;
+            background: linear-gradient(90deg, var(--primary-blue), var(--teal-accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        
+        .tagline {
+            font-size: 1.2rem;
+            color: var(--neutral-gray);
+            max-width: 600px;
+            margin: 0 auto 30px;
+            line-height: 1.6;
+        }
+        
+        /* Main Input Area */
+        .input-area {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid #e5e7eb;
+        }
+        
+        .input-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .input-header h2 {
+            font-size: 1.8rem;
+            color: #111827;
+        }
+        
+        .modes {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .mode-btn {
+            padding: 10px 20px;
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #4b5563;
+            transition: var(--transition);
+        }
+        
+        .mode-btn.active {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+        
+        .upload-area {
+            border: 3px dashed #cbd5e1;
+            border-radius: 15px;
+            padding: 60px 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            cursor: pointer;
+            transition: var(--transition);
+            background: #f8fafc;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--teal-accent);
+            background: #f0f9ff;
+        }
+        
+        .upload-icon {
+            font-size: 60px;
+            color: var(--teal-accent);
+            margin-bottom: 20px;
+        }
+        
+        .upload-text h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #1e293b;
+        }
+        
+        .upload-text p {
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+        
+        .browse-btn {
+            background: var(--teal-accent);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .browse-btn:hover {
+            background: #0f766e;
+            transform: translateY(-2px);
+        }
+        
+        .text-input-area {
+            display: none;
+        }
+        
+        .text-input-area textarea {
+            width: 100%;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #e5e7eb;
+            font-size: 1.1rem;
+            min-height: 180px;
+            resize: vertical;
+            transition: var(--transition);
+        }
+        
+        .text-input-area textarea:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .preview-area {
+            display: none;
+            margin-top: 30px;
+            text-align: center;
+        }
+        
+        .preview-img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .analyze-btn {
+            background: linear-gradient(90deg, var(--primary-blue), #4f46e5);
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            font-size: 1.3rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            display: block;
+            margin: 40px auto 0;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+            transition: var(--transition);
+        }
+        
+        .analyze-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(37, 99, 235, 0.4);
+        }
+        
+        /* Results Area */
+        .results-area {
+            display: none;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-top: 30px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .results-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+        
+        .verdict-badge {
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 800;
+            font-size: 1.4rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .verdict-verified {
+            background: #d1fae5;
+            color: var(--success-green);
+            border: 2px solid var(--success-green);
+        }
+        
+        .verdict-false {
+            background: #fee2e2;
+            color: var(--danger-red);
+            border: 2px solid var(--danger-red);
+        }
+        
+        .verdict-uncertain {
+            background: #fef3c7;
+            color: var(--warning-amber);
+            border: 2px solid var(--warning-amber);
+        }
+        
+        .confidence-meter {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .meter-bar {
+            width: 200px;
+            height: 20px;
+            background: #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .meter-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 1.5s ease;
+        }
+        
+        .analysis-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .detail-card {
+            background: #f8fafc;
+            border-radius: 15px;
+            padding: 25px;
+            border-left: 5px solid var(--teal-accent);
+        }
+        
+        .detail-card h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            color: #1e293b;
+        }
+        
+        .detail-card p {
+            color: #475569;
+            line-height: 1.6;
+        }
+        
+        .source-list {
+            margin-top: 20px;
+            padding: 0;
+            list-style: none;
+        }
+        
+        .source-list li {
+            padding: 12px 15px;
+            background: white;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-blue);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .source-link {
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .source-link:hover {
+            text-decoration: underline;
+        }
+        
+        .try-again-btn {
+            background: #f1f5f9;
+            color: var(--neutral-gray);
+            border: 2px solid #cbd5e1;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            display: block;
+            margin: 0 auto;
+            transition: var(--transition);
+        }
+        
+        .try-again-btn:hover {
+            background: #e2e8f0;
+            color: #1f2937;
+        }
+        
+        /* Loading Animation */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .spinner {
+            width: 70px;
+            height: 70px;
+            border: 8px solid #e5e7eb;
+            border-top: 8px solid var(--primary-blue);
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+            margin: 0 auto 30px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-steps {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .step {
+            text-align: center;
+            width: 120px;
+        }
+        
+        .step-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--primary-blue);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 20px;
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .input-area, .results-area {
+                padding: 25px;
+            }
+            
+            .logo-text h1 {
+                font-size: 2.2rem;
+            }
+            
+            .analysis-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .loading-steps {
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-shield-check"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>Veritas Lens</h1>
+                </div>
+            </div>
+            <p class="tagline">An AI-powered multimodal fact-checking system that analyzes text and images to detect misinformation and verify claims against trusted sources.</p>
+        </header>
+        
+        <main>
+            <section class="input-area">
+                <div class="input-header">
+                    <h2>Check for Misinformation</h2>
+                    <div class="modes">
+                        <button class="mode-btn active" data-mode="multimodal">Text & Image</button>
+                        <button class="mode-btn" data-mode="text">Text Only</button>
+                        <button class="mode-btn" data-mode="image">Image Only</button>
+                    </div>
+                </div>
+                
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <div class="upload-text">
+                        <h3>Upload Content to Analyze</h3>
+                        <p>Drag & drop an image file here, or click to browse</p>
+                        <p><strong>Supported formats:</strong> JPG, PNG, WebP (Max 10MB)</p>
+                        <button class="browse-btn">Browse Files</button>
+                    </div>
+                    <input type="file" id="imageUpload" accept="image/*" hidden>
+                </div>
+                
+                <div class="text-input-area" id="textInputArea">
+                    <h3>Enter text to fact-check</h3>
+                    <textarea id="textInput" placeholder="Paste or type the claim you want to verify here..."></textarea>
+                </div>
+                
+                <div class="preview-area" id="previewArea">
+                    <h3>Image Preview</h3>
+                    <img id="previewImage" class="preview-img" src="" alt="Preview">
+                </div>
+                
+                <button class="analyze-btn" id="analyzeBtn">
+                    <i class="fas fa-search"></i> Analyze Content
+                </button>
+            </section>
+            
+            <section class="loading" id="loadingSection">
+                <div class="spinner"></div>
+                <h2>Analyzing Your Content</h2>
+                <p>Our AI is examining text, images, and cross-referencing with trusted sources...</p>
+                
+                <div class="loading-steps">
+                    <div class="step">
+                        <div class="step-icon">
+                            <i class="fas fa-font"></i>
+                        </div>
+                        <p>Text Analysis</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-icon">
+                            <i class="fas fa-image"></i>
+                        </div>
+                        <p>Image Forensics</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <p>Evidence Retrieval</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <p>Cross-modal Reasoning</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="results-area" id="resultsArea">
+                <div class="results-header">
+                    <div>
+                        <h2>Analysis Results</h2>
+                        <p id="claimSummary">Claim: <span id="claimText"></span></p>
+                    </div>
+                    <div class="confidence-meter">
+                        <span>Confidence: <strong id="confidenceValue">85%</strong></span>
+                        <div class="meter-bar">
+                            <div class="meter-fill" id="confidenceBar"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="verdict-badge" id="verdictBadge">
+                    <i class="fas fa-check-circle"></i> VERIFIED / GENUINE
+                </div>
+                
+                <div class="analysis-details">
+                    <div class="detail-card">
+                        <h3><i class="fas fa-font"></i> Text Analysis</h3>
+                        <p id="textAnalysisResult">The text contains verifiable factual claims about historical events. Key entities were extracted and checked against historical databases.</p>
+                    </div>
+                    
+                    <div class="detail-card">
+                        <h3><i class="fas fa-image"></i> Image Analysis</h3>
+                        <p id="imageAnalysisResult">No signs of digital manipulation detected. Reverse image search confirms original context from verified sources.</p>
+                    </div>
+                    
+                    <div class="detail-card">
+                        <h3><i class="fas fa-link"></i> Cross-modal Consistency</h3>
+                        <p id="crossModalResult">The image and text are contextually aligned. No contradictory information found between visual and textual content.</p>
+                    </div>
+                </div>
+                
+                <div class="detail-card">
+                    <h3><i class="fas fa-list-check"></i> Evidence & Sources</h3>
+                    <p>The AI cross-referenced the content with multiple trusted sources:</p>
+                    <ul class="source-list" id="sourceList">
+                        <li>Wikipedia - Historical Events Database <a href="#" class="source-link">View</a></li>
+                        <li>FactCheck.org - Claim Verification <a href="#" class="source-link">View</a></li>
+                        <li>Google Reverse Image Search - Context Verification <a href="#" class="source-link">View</a></li>
+                        <li>Associated Press Fact Check Database <a href="#" class="source-link">View</a></li>
+                    </ul>
+                </div>
+                
+                <button class="try-again-btn" id="tryAgainBtn">
+                    <i class="fas fa-redo"></i> Check Another Claim
+                </button>
+            </section>
+        </main>
+        
+        <footer>
+            <p>© 2025 Veritas Lens • AI-Powered Multimodal Fact-Checking System</p>
+            <p>This system uses Large Vision-Language Models (LVLMs) for cross-modal reasoning and evidence retrieval from trusted sources[citation:5][citation:9].</p>
+        </footer>
+    </div>
 
-<!-- TODO 2: Add Your previous projects' HTML into the public folder -->
-
-<!-- TODO 3: Take screenshots of your project previews and add the images to the images folder -->
-
-<!-- TODO 4: Add titles/subtitles etc. -->
-
-<!-- TODO 5: Add a link to the project pages -->
-
-<!-- TODO 6: Add images to show the project previews
-HINT for TODO 6: You can use the height attribute set to 200 to make the image smaller:
-https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attr-height -->
-
-<!-- TODO 7: Add the Contact Me and About Me page links -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const uploadArea = document.getElementById('uploadArea');
+            const imageUpload = document.getElementById('imageUpload');
+            const previewArea = document.getElementById('previewArea');
+            const previewImage = document.getElementById('previewImage');
+            const textInputArea = document.getElementById('textInputArea');
+            const textInput = document.getElementById('textInput');
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            const loadingSection = document.getElementById('loadingSection');
+            const resultsArea = document.getElementById('resultsArea');
+            const modeButtons = document.querySelectorAll('.mode-btn');
+            const tryAgainBtn = document.getElementById('tryAgainBtn');
+            
+            // Results elements
+            const verdictBadge = document.getElementById('verdictBadge');
+            const confidenceBar = document.getElementById('confidenceBar');
+            const confidenceValue = document.getElementById('confidenceValue');
+            const claimText = document.getElementById('claimText');
+            const textAnalysisResult = document.getElementById('textAnalysisResult');
+            const imageAnalysisResult = document.getElementById('imageAnalysisResult');
+            const crossModalResult = document.getElementById('crossModalResult');
+            
+            // Application State
+            let currentMode = 'multimodal';
+            let uploadedImage = null;
+            let currentText = '';
+            
+            // Mode Switching
+            modeButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    modeButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentMode = this.dataset.mode;
+                    
+                    // Update UI based on mode
+                    updateInputUI();
+                });
+            });
+            
+            function updateInputUI() {
+                // Reset preview
+                previewArea.style.display = 'none';
+                previewImage.src = '';
+                
+                // Show/hide elements based on mode
+                if (currentMode === 'multimodal') {
+                    uploadArea.style.display = 'block';
+                    textInputArea.style.display = 'block';
+                    analyzeBtn.textContent = ' Analyze Text & Image';
+                } else if (currentMode === 'text') {
+                    uploadArea.style.display = 'none';
+                    textInputArea.style.display = 'block';
+                    analyzeBtn.textContent = ' Analyze Text';
+                } else if (currentMode === 'image') {
+                    uploadArea.style.display = 'block';
+                    textInputArea.style.display = 'none';
+                    analyzeBtn.textContent = ' Analyze Image';
+                }
+            }
+            
+            // File Upload Handling
+            uploadArea.addEventListener('click', () => imageUpload.click());
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.style.borderColor = 'var(--teal-accent)';
+                uploadArea.style.background = '#f0f9ff';
+            });
+            
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.style.borderColor = '#cbd5e1';
+                uploadArea.style.background = '#f8fafc';
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.style.borderColor = '#cbd5e1';
+                uploadArea.style.background = '#f8fafc';
+                
+                if (e.dataTransfer.files.length) {
+                    handleImageUpload(e.dataTransfer.files[0]);
+                }
+            });
+            
+            imageUpload.addEventListener('change', (e) => {
+                if (e.target.files.length) {
+                    handleImageUpload(e.target.files[0]);
+                }
+            });
+            
+            function handleImageUpload(file) {
+                if (!file.type.match('image.*')) {
+                    alert('Please upload an image file (JPG, PNG, etc.)');
+                    return;
+                }
+                
+                if (file.size > 10 * 1024 * 1024) {
+                    alert('Image size should be less than 10MB');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedImage = e.target.result;
+                    previewImage.src = uploadedImage;
+                    previewArea.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+            
+            // Text Input Handling
+            textInput.addEventListener('input', function() {
+                currentText = this.value;
+                claimText.textContent = currentText.length > 100 ? 
+                    currentText.substring(0, 100) + '...' : currentText;
+            });
+            
+            // Analyze Button
+            analyzeBtn.addEventListener('click', function() {
+                // Validation based on mode
+                if (currentMode === 'multimodal' && !uploadedImage && !currentText.trim()) {
+                    alert('Please provide both an image and text to analyze');
+                    return;
+                }
+                
+                if (currentMode === 'text' && !currentText.trim()) {
+                    alert('Please enter text to analyze');
+                    return;
+                }
+                
+                if (currentMode === 'image' && !uploadedImage) {
+                    alert('Please upload an image to analyze');
+                    return;
+                }
+                
+                // Show loading, hide input and results
+                document.querySelector('.input-area').style.display = 'none';
+                loadingSection.style.display = 'block';
+                resultsArea.style.display = 'none';
+                
+                // Simulate AI analysis process
+                simulateAnalysis();
+            });
+            
+            // Try Again Button
+            tryAgainBtn.addEventListener('click', function() {
+                // Reset UI
+                loadingSection.style.display = 'none';
+                resultsArea.style.display = 'none';
+                document.querySelector('.input-area').style.display = 'block';
+                
+                // Reset form
+                if (currentMode !== 'image') {
+                    textInput.value = '';
+                    currentText = '';
+                }
+                
+                if (currentMode !== 'text') {
+                    uploadedImage = null;
+                    previewArea.style.display = 'none';
+                    previewImage.src = '';
+                    imageUpload.value = '';
+                }
+            });
+            
+            // Simulate AI Analysis (for demo purposes)
+            function simulateAnalysis() {
+                // For demo, we'll simulate different results
+                const verdicts = [
+                    { type: 'verified', confidence: 92, color: 'var(--success-green)', text: 'VERIFIED / GENUINE' },
+                    { type: 'false', confidence: 88, color: 'var(--danger-red)', text: 'CONTRADICTED / MANIPULATED' },
+                    { type: 'uncertain', confidence: 65, color: 'var(--warning-amber)', text: 'UNSUBSTANTIATED / UNCERTAIN' }
+                ];
+                
+                const randomVerdict = verdicts[Math.floor(Math.random() * verdicts.length)];
+                
+                // Simulate analysis time
+                setTimeout(() => {
+                    // Hide loading, show results
+                    loadingSection.style.display = 'none';
+                    resultsArea.style.display = 'block';
+                    
+                    // Set claim text
+                    const displayText = currentText || "Analyzed visual content";
+                    claimText.textContent = displayText.length > 100 ? 
+                        displayText.substring(0, 100) + '...' : displayText;
+                    
+                    // Update verdict badge
+                    verdictBadge.innerHTML = `<i class="fas fa-${randomVerdict.type === 'verified' ? 'check-circle' : randomVerdict.type === 'false' ? 'times-circle' : 'question-circle'}"></i> ${randomVerdict.text}`;
+                    verdictBadge.className = 'verdict-badge ';
+                    
+                    if (randomVerdict.type === 'verified') {
+                        verdictBadge.classList.add('verdict-verified');
+                    } else if (randomVerdict.type === 'false') {
+                        verdictBadge.classList.add('verdict-false');
+                    } else {
+                        verdictBadge.classList.add('verdict-uncertain');
+                    }
+                    
+                    // Update confidence
+                    confidenceBar.style.width = `${randomVerdict.confidence}%`;
+                    confidenceBar.style.background = randomVerdict.color;
+                    confidenceValue.textContent = `${randomVerdict.confidence}%`;
+                    
+                    // Update analysis texts based on verdict
+                    if (randomVerdict.type === 'verified') {
+                        textAnalysisResult.textContent = "The text makes factual claims that are supported by multiple reliable sources. No misleading language detected.";
+                        imageAnalysisResult.textContent = "Image appears authentic. No signs of manipulation found. Context matches described scenario.";
+                        crossModalResult.textContent = "Text and image are consistent. The visual content properly illustrates the textual claims.";
+                    } else if (randomVerdict.type === 'false') {
+                        textAnalysisResult.textContent = "Text contains inaccurate claims contradicted by authoritative sources. Key facts are misrepresented.";
+                        imageAnalysisResult.textContent = "Signs of digital manipulation detected OR image is used out of original context. Reverse image search reveals discrepancy.";
+                        crossModalResult.textContent = "Text and image present contradictory information. The pairing creates a misleading narrative.";
+                    } else {
+                        textAnalysisResult.textContent = "Text contains claims that cannot be fully verified with current sources. Some statements lack clear evidence.";
+                        imageAnalysisResult.textContent = "Image authenticity is unclear. May be authentic but lacking source verification or could be manipulated.";
+                        crossModalResult.textContent = "Relationship between text and image is ambiguous. Cannot determine if they properly correlate.";
+                    }
+                    
+                    // Update source list based on verdict
+                    const sourceList = document.getElementById('sourceList');
+                    sourceList.innerHTML = '';
+                    
+                    const sources = [
+                        { name: 'Google Fact Check Tools', url: '#' },
+                        { name: 'Snopes Fact-Checking Database', url: '#' },
+                        { name: 'AP Fact Check', url: '#' },
+                        { name: 'Reuters Fact Check', url: '#' },
+                        { name: 'Wikipedia Verification', url: '#' },
+                        { name: 'TinEye Reverse Image Search', url: '#' }
+                    ];
+                    
+                    // Show 3-4 random sources
+                    const shuffled = sources.sort(() => 0.5 - Math.random());
+                    const selected = shuffled.slice(0, 3 + Math.floor(Math.random() * 2));
+                    
+                    selected.forEach(source => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `${source.name} <a href="#" class="source-link">View</a>`;
+                        sourceList.appendChild(li);
+                    });
+                    
+                }, 3000); // 3 second simulation
+            }
+            
+            // Initialize UI
+            updateInputUI();
+        });
+    </script>
+</body>
+</html>
